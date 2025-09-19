@@ -4,6 +4,16 @@ import os
 from PIL import Image
 from enum import Enum
 
+class NoInputProvidedError(Exception):
+    def __init__(self, msg):
+        super().__init__(f"No arguments provided, please provide {msg}")
+
+class ProvidedPathAndNumpyArrayError(Exception):
+    def __init__(self, path):
+        super().__init__(f"Provided Both path {path} for image and a numpy array when only one must be input")
+
+
+
 class background(Enum):
     OPAQUE = "███"
 
@@ -17,18 +27,8 @@ class background(Enum):
 
 background_list = [background.OPAQUE, background.TRANSLUICD_OPAQUE, background.TRANSLUCID, background.TRASPARENT, background.OFF]
  
-filename = os.path.join('colonthree.bmp') #Image to display
-pilmage = Image.open(filename)
 
-pilmage.thumbnail((128, 256)) #Resolution of the text 
 
-filename2 = os.path.join('out.bmp')
-
-pilmage.save(filename2)
-
-image = ski.io.imread(filename2)
-
-text = ""
 start = "\033[107m"
 end = "\033[0m"
 
@@ -81,18 +81,40 @@ class Pixel:
         _text += background_list[self.value].value
         return _text
 
-shape = np.shape(image)
-pixelarr = np.array([[Pixel(0,0,0) for i in range(shape[1])] for j in range(shape[0])])
-for i in range(shape[0]):
-    for j in range(shape[1]):
-        pixelarr[i, j].skiPixelToPixel(ski.color.rgb2hsv(np.array(image[i, j][:3],dtype=np.uint8)))
+def printimage(dimensions : tuple[int],path= None, pilmage= None):
+    """
+    Only Input either path or numpy image
+    """
+    global background_list
+    global start
+    global end
+    global huetranslator
+    text = ""
+    if path != None and pilmage != None:
+        raise ProvidedPathAndNumpyArrayError(path= path)
+    if path != None:
+        pilmage = Image.open(os.path.join(path))
+        
+    elif pilmage != None:
+        pass
+    
+    else:
+        raise NoInputProvidedError(msg= "either a path or numpy image")
+    pilmage.thumbnail(dimensions) #Resolution of the text 
+    image = np.asarray(pilmage)
+    
+    shape = np.shape(image)
+    pixelarr = np.array([[Pixel(0,0,0) for i in range(shape[1])] for j in range(shape[0])])
+    for i in range(shape[0]):
+        for j in range(shape[1]):
+            pixelarr[i, j].skiPixelToPixel(ski.color.rgb2hsv(np.array(image[i, j][:3],dtype=np.uint8)))
 
-text += start
-for i in range(shape[0]):
-    for j in range(shape[1]):
-        text += pixelarr[i, j].pixelToText()
-    text += "\n"
-text += end
+    text += start
+    for i in range(shape[0]):
+        for j in range(shape[1]):
+            text += pixelarr[i, j].pixelToText()
+        text += "\n"
+    text += end
 
 
-print(text)
+    return text
