@@ -17,7 +17,7 @@ class background(Enum):
 
 background_list = [background.OPAQUE, background.TRANSLUICD_OPAQUE, background.TRANSLUCID, background.TRASPARENT, background.OFF]
  
-filename = os.path.join('aaaaa.bmp') #Image to display
+filename = os.path.join('colonthree.bmp') #Image to display
 pilmage = Image.open(filename)
 
 pilmage.thumbnail((128, 256)) #Resolution of the text 
@@ -93,5 +93,6 @@ for i in range(shape[0]):
         text += pixelarr[i, j].pixelToText()
     text += "\n"
 text += end
+
 
 print(text)
