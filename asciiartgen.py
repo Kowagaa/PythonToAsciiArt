@@ -2,8 +2,8 @@ import numpy as np
 import skimage as ski
 import os
 from PIL import Image
-
 from enum import Enum
+
 class background(Enum):
     OPAQUE = "███"
 
@@ -17,18 +17,16 @@ class background(Enum):
 
 background_list = [background.OPAQUE, background.TRANSLUICD_OPAQUE, background.TRANSLUCID, background.TRASPARENT, background.OFF]
  
-filename = os.path.join('colonthree.bmp') #Image to display
+filename = os.path.join('aaaaa.bmp') #Image to display
 pilmage = Image.open(filename)
 
-pilmage.thumbnail((64, 64)) #Resolution of the text 
+pilmage.thumbnail((128, 256)) #Resolution of the text 
 
 filename2 = os.path.join('out.bmp')
 
 pilmage.save(filename2)
 
 image = ski.io.imread(filename2)
-
-
 
 text = ""
 start = "\033[107m"
@@ -83,8 +81,6 @@ class Pixel:
         _text += background_list[self.value].value
         return _text
 
-
-print(ski.color.rgb2hsv(np.array(image[0,1][:3],dtype=np.uint8)))
 shape = np.shape(image)
 pixelarr = np.array([[Pixel(0,0,0) for i in range(shape[1])] for j in range(shape[0])])
 for i in range(shape[0]):
@@ -97,8 +93,5 @@ for i in range(shape[0]):
         text += pixelarr[i, j].pixelToText()
     text += "\n"
 text += end
-
-
-
 
 print(text)
